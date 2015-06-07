@@ -1,0 +1,12 @@
+[root]
+name = "raft_server"
+version = "0.1.0"
+dependencies = [
+ "protobuf 1.0.0 (git+https://github.com/stepancheg/rust-protobuf.git)",
+]
+
+[[package]]
+name = "protobuf"
+version = "1.0.0"
+source = "git+https://github.com/stepancheg/rust-protobuf.git#302292052965a9e3fb7318c9fdf799f7bed7f1b2"
+

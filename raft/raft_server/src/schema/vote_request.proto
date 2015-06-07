@@ -1,0 +1,13 @@
+
+message VoteRequest {
+
+    required string candidateId = 1;
+    required int32 term = 2;
+    required int32 lastLogIndex = 3;
+    required int32 lastLogterm = 4; 
+}
+
+message VoteReply {
+    required int32 term = 1;
+    required bool granted = 2;
+}

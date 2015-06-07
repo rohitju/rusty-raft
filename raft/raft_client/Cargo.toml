@@ -1,0 +1,4 @@
+[package]
+name = "raft_client"
+version = "0.1.0"
+authors = ["Rohit <rohitju07@gmail.com>"]
