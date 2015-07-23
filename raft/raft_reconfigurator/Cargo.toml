@@ -1,5 +1,5 @@
 [package]
-name = "raft_server"
+name = "raft_reconfigurator"
 version = "0.1.0"
 authors = ["Rohit <rohitju07@gmail.com>"]
 
@@ -9,4 +9,3 @@ git = "https://github.com/stepancheg/rust-protobuf.git"
 [dependencies]
 getopts = "0.2.11"
 mio = "0.3.5"
-rust-ini = "0.8.0"

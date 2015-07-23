@@ -1,5 +1,5 @@
 [root]
-name = "raft_server"
+name = "raft_reconfigurator"
 version = "0.1.0"
 dependencies = [
  "getopts 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -66,7 +66,7 @@ dependencies = [
 [[package]]
 name = "protobuf"
 version = "1.0.0"
-source = "git+https://github.com/stepancheg/rust-protobuf.git#cb47eb112bbcc7941b64a717a43cf5163474e7bb"
+source = "git+https://github.com/stepancheg/rust-protobuf.git#d6e80593f38ce47dfa0c4912a3558fa33ee06143"
 
 [[package]]
 name = "time"

@@ -1,0 +1,113 @@
+extern crate protobuf;
+mod vote;
+
+use std::net::{TcpListener, TcpStream};
+use std::thread;
+
+use std::io::Read;
+use std::io::Write;
+//use protobuf::core::Message;
+//use protobuf::hex::encode_hex;
+//use protobuf::hex::decode_hex;
+use protobuf::*;
+
+fn handle_client(mut stream: TcpStream) {
+    let mut buf = String::new();
+    //let mut vote = vote::VoteRequest::new();
+    //vote.set_candidateId("abcd".to_string());    
+    /*loop {
+        buf = [0; 512];
+        let _ = match stream.read(&mut buf) {
+            Err(e) => panic!("Got an error: {}", e),
+            Ok(m) => {
+                if m == 0 {
+                    // we've got an EOF
+                    break;
+                }
+                m
+            },
+        };
+        let mut strCpy = stream.try_clone().unwrap();
+        let  coStream = ::protobuf::CodedOutputStream::new(&mut strCpy);
+
+        match stream.write(vote.get_candidateId().as_bytes()) {
+            Err(_) => break,
+            Ok(_) => continue,
+        }
+    }*/
+        let mut  coStream = ::protobuf::CodedInputStream::new(&mut stream);
+    let recieved_vote = coStream.read_message::<vote::Vote>().unwrap();
+    /*let num_bytes = stream.read_to_end(&mut buf);
+    println!("Read a total of {} bytes.", num_bytes.unwrap());
+    println!("Read string {}.", buf);
+     //let expected_bytes = decode_hex(&buf);
+    //println!("About to deserialize.");
+    //let mut voteRead: vote::VoteRequest = coStream.read_message().unwrap();
+    let parsed = parse_from_bytes::<vote::Vote>(buf.as_bytes()).unwrap();
+
+    let typeG = parsed.get_m_type();
+    if (typeG == vote::Vote_MessageType::REQUEST) {
+        let req = parsed.get_request();
+        println!("Candidate id is {}", req.get_candidateId());
+        println!("Term is {}", req.get_term());
+        println!("last log index is {}", req.get_lastLogIndex());
+        println!("las log term is {}", req.get_lastLogTerm());
+    }
+    else if (typeG == vote::Vote_MessageType::REPLY) {
+        let rep = parsed.get_reply();
+        println!("Term is {}", rep.get_term());
+        println!("granted is {}", rep.get_granted() as i32);
+    }
+    println!("Oh yeah got type as {}", typeG as i32);*/
+    println!("Message type is {}.", recieved_vote.get_m_type() as i32);
+    if (recieved_vote.get_m_type() == vote::Vote_MessageType::REQUEST) {
+        let req = recieved_vote.get_request();
+        println!("Candidate id is {}", req.get_candidateId());
+        println!("Term is {}", req.get_term());
+        println!("last log index is {}", req.get_lastLogIndex());
+        println!("las log term is {}", req.get_lastLogTerm());
+    }
+    else if (recieved_vote.get_m_type() == vote::Vote_MessageType::REPLY) {
+        let rep = recieved_vote.get_reply();
+        println!("Term is {}", rep.get_term());
+        println!("granted is {}", rep.get_granted() as i32);
+    }
+}
+
+fn main() {
+    let listener = TcpListener::bind("127.0.0.1:60000").unwrap();
+    println!("Started server on 127.0.0.1 at port 60000.");
+    println!("Crfeating a TCP stream.");
+    let mut newVote = vote::Vote::new();
+    let mut req = vote::VoteRequest::new();
+    req.set_candidateId("1".to_string());
+    req.set_term(1);
+    req.set_lastLogIndex(2);
+    req.set_lastLogTerm(3);
+    let mut rep = vote::VoteReply::new();
+    rep.set_term(1);
+    rep.set_granted(false);
+    newVote.set_m_type(vote::Vote_MessageType::REPLY);    
+    newVote.set_request(req);
+    newVote.set_reply(rep);
+    thread::spawn(move || {
+        for stream in listener.incoming() {
+            match stream { 
+                Err(e) => { println!("Failed: {}", e)}
+                Ok(stream) => {
+                    thread::spawn(move || {
+                        handle_client(stream)
+                    });
+                }
+            }
+        }
+    });
+    let mut sendStream = TcpStream::connect("127.0.0.1:60000").unwrap();
+    println!("Got a TCP stream.");
+    let  mut coStream = ::protobuf::CodedOutputStream::new(&mut sendStream);
+    //newVote.write_to_with_cached_sizes(&mut coStream);
+    coStream.write_message_no_tag::<vote::Vote>(&newVote);
+    coStream.flush();
+    println!("Wrote a protobuf struct.");
+    thread::sleep_ms(7000) ;
+}

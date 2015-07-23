@@ -1,0 +1,32 @@
+
+message Message {
+    enum MessageType {
+        V_REQUEST = 1;
+        V_REPLY = 2;
+        CONFIG = 3;
+        APPEND = 4;
+    }
+        
+    required MessageType m_type = 1;
+    optional VoteRequest request = 2;
+    optional VoteReply reply = 3; 
+    optional ClusterConfig config = 4;
+}
+
+message ClusterConfig {
+    required string leader = 1;
+    repeated string machines = 2;
+}
+
+message VoteRequest {
+
+    required string candidateId = 1;
+    required int32 term = 2;
+    required int32 lastLogIndex = 3;
+    required int32 lastLogTerm = 4; 
+}
+
+message VoteReply {
+    required int32 term = 1;
+    required bool granted = 2;
+}
